@@ -1,12 +1,16 @@
 package br.com.fiap.primeira_api.controller;
 
+import br.com.fiap.primeira_api.dto.ClienteRequest;
+import br.com.fiap.primeira_api.dto.ClienteResponse;
 import br.com.fiap.primeira_api.model.Cliente;
 import br.com.fiap.primeira_api.repository.ClienteRepository;
+import br.com.fiap.primeira_api.service.ClienteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -15,21 +19,31 @@ import java.util.Optional;
 public class ClienteController {
     @Autowired
     private ClienteRepository clienteRepository;
+    @Autowired
+    private ClienteService clienteService;
 
     //CRUD
     @PostMapping
-    public ResponseEntity<Cliente> create(@RequestBody Cliente cliente) {
-        Cliente clienteCriado = clienteRepository.save(cliente);
-        return new ResponseEntity<>(clienteCriado, HttpStatus.CREATED);
+    public ResponseEntity<ClienteResponse> create(@RequestBody ClienteRequest clienteRequest) {
+        Cliente cliente = clienteService.requestToCliente(clienteRequest);
+        Cliente clienteSalvo = clienteRepository.save(cliente);
+        ClienteResponse clienteResponse = clienteService.clienteToResponse(clienteSalvo);
+        return new ResponseEntity<>(clienteResponse, HttpStatus.CREATED);
     }
 
     @GetMapping
-    public ResponseEntity<List<Cliente>> readAll() {
+    public ResponseEntity<List<ClienteResponse>> read() {
         List<Cliente> listaClientes = clienteRepository.findAll();
         if (listaClientes.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        } else {
+            List<ClienteResponse> listaClienteResponse = new ArrayList<>();
+            for (Cliente cliente : listaClientes) {
+                ClienteResponse clienteResponse = clienteService.clienteToResponse(cliente);
+                listaClienteResponse.add(clienteResponse);
+            }
+            return new ResponseEntity<>(listaClienteResponse, HttpStatus.OK);
         }
-        return new ResponseEntity<>(listaClientes, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
@@ -43,15 +57,25 @@ public class ClienteController {
 
     @PutMapping("/{id}")
     public ResponseEntity<Cliente> update(@PathVariable int id, @RequestBody Cliente cliente) {
-        cliente.setId(id);
-        Cliente clienteCriado = clienteRepository.save(cliente);
-        return new ResponseEntity<>(clienteCriado, HttpStatus.CREATED);
+        Optional<Cliente> clienteSalvo = clienteRepository.findById(id);
+        Cliente clienteUpdate;
+        if (clienteSalvo.isPresent()) {
+            cliente.setId(id);
+            clienteUpdate = clienteRepository.save(cliente);
+            return new ResponseEntity<>(clienteUpdate, HttpStatus.CREATED);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 
-    @DeleteMapping
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable int id) {
-        Cliente clienteDelete = clienteRepository.getReferenceById(id);
-        clienteRepository.delete(clienteDelete);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        Optional<Cliente> clienteSalvo = clienteRepository.findById(id);
+        if (clienteSalvo.isPresent()) {
+            clienteRepository.deleteById(id);
+            return new ResponseEntity<>(HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
     }
 }

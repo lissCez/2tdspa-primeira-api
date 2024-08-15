@@ -1,27 +1,9 @@
-package br.com.fiap.primeira_api.model;
+package br.com.fiap.primeira_api.dto;
 
-import jakarta.persistence.*;
-
-@Entity
-@Table(name = "tb_cliente")
-public class Cliente {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
-    @Column(name = "cliente_nome")
+public class ClienteRequest {
     private String nome;
-    @Column(name = "cliente_email")
     private String email;
-    @Column(name = "cliente_senha")
     private String senha;
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
 
     public String getNome() {
         return nome;
