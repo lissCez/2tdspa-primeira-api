@@ -5,12 +5,13 @@ import br.com.fiap.primeira_api.dto.ClienteResponse;
 import br.com.fiap.primeira_api.model.Cliente;
 import br.com.fiap.primeira_api.repository.ClienteRepository;
 import br.com.fiap.primeira_api.service.ClienteService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,7 +25,7 @@ public class ClienteController {
 
     //CRUD
     @PostMapping
-    public ResponseEntity<ClienteResponse> create(@RequestBody ClienteRequest clienteRequest) {
+    public ResponseEntity<ClienteResponse> create(@Valid @RequestBody ClienteRequest clienteRequest) {
         Cliente cliente = clienteService.requestToCliente(clienteRequest);
         Cliente clienteSalvo = clienteRepository.save(cliente);
         ClienteResponse clienteResponse = clienteService.clienteToResponse(clienteSalvo);
@@ -32,17 +33,12 @@ public class ClienteController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ClienteResponse>> read() {
+    public ResponseEntity<Page<ClienteResponse>> read() {
         List<Cliente> listaClientes = clienteRepository.findAll();
         if (listaClientes.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } else {
-            List<ClienteResponse> listaClienteResponse = new ArrayList<>();
-            for (Cliente cliente : listaClientes) {
-                ClienteResponse clienteResponse = clienteService.clienteToResponse(cliente);
-                listaClienteResponse.add(clienteResponse);
-            }
-            return new ResponseEntity<>(listaClienteResponse, HttpStatus.OK);
+            return new ResponseEntity<>(clienteService.findAll(), HttpStatus.OK);
         }
     }
 
