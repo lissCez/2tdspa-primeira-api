@@ -6,6 +6,7 @@ import br.com.fiap.primeira_api.model.Cliente;
 import br.com.fiap.primeira_api.repository.ClienteRepository;
 import br.com.fiap.primeira_api.service.ClienteService;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -17,6 +18,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping(value = "/clientes")
+@Slf4j
 public class ClienteController {
     @Autowired
     private ClienteRepository clienteRepository;

@@ -10,9 +10,9 @@ public class Cliente {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @Column(name = "cliente_nome")
+    @Column(name = "cliente_nome", length = 200, nullable = false)
     private String nome;
-    @Column(name = "cliente_email")
+    @Column(name = "cliente_email", length = 200, nullable = false, unique = true)
     private String email;
     @Column(name = "cliente_senha")
     private String senha;
@@ -22,7 +22,7 @@ public class Cliente {
     private int anoNascimento;
     @Column(name= "data_nascimento")
     private Date dataNascimento;
-    @Column(name = "cliente_cpf")
+    @Column(name = "cliente_cpf", length = 11, nullable = false, unique = true)
     private String cpf;
 
     public int getId() {
