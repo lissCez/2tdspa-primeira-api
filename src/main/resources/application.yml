@@ -1,0 +1,19 @@
+spring:
+    application:
+      name: primeira-api
+    datasource:
+      url: jdbc:postgresql://127.0.0.1:5433/fiap
+      username: postgres
+      password: postgres
+      driver-class-name: org.postgresql.Driver
+    jpa:
+      hibernate:
+        ddl-auto: update# Or `validate`, `create`, `create-drop` depending on your needs
+      properties:
+        hibernate:
+          dialect: org.hibernate.dialect.PostgreSQLDialect
+      show-sql: true  # To show SQL queries in the console (optional)
+      open-in-view: false# Best practice to disable Open Session in View pattern
+    devtools:
+      restart:
+        enabled: true
